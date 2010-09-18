@@ -1,0 +1,14 @@
+<% form_for( :upload, nil,  :url => images_url, :method => :post, :html => { :multipart => true } ) do |f|  %>
+
+
+  <p>
+  <%= f.label :file_field, "Image Upload"  %><br />
+  <%= f.file_field :image_file, :width => 10 %><br />
+  </p>
+
+
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
