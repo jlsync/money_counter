@@ -25,7 +25,8 @@ class Image
       {
         'file-name' => file_name,
         'radii'     => coins_radii,
-        'full_path' => full_path
+        'full_path' => full_path,
+        'total_money' => '4.42'
       }.to_json
   end
 

@@ -10,9 +10,10 @@ class ImagesController < ApplicationController
     image = Image.new(:file => params[:upload][:image_file])
     image.save!
 
+
     respond_to do |format|
-      format.html { render :text => "the image filename was #{image.file_name} and it's size was #{image.data.size} and the amount of money was #{"XXX.XX"}" }
-      format.xml { render :xml => image.new.to_xml }
+      format.html { render :text => image.to_json }
+      format.xml { render :xml => image.to_xml }
     end
 
   end
