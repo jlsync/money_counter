@@ -1,0 +1,50 @@
+
+<div align="center" id="message">
+  Redirecting to PayPal...
+</div>
+
+<% payment_service_for @order_id, @paypal_account,
+  :service => :paypal,
+  :html => {:id => "paypal_form" } do |service|  %>
+
+ <%  
+    #service.customer :email => @order.user.email
+
+    service.item_name "Donation"
+    service.invoice @invoice
+    service.currency  'GBP'
+    service.tax '0.00'
+    service.shipping '0.00'
+
+    #service.notify_url paypal_ipn_url(:host => PAYPAL_IPN_HOST )
+
+    #  use  service.return not service.return_url - Jason.
+    #service.return_url URI.encode(thank_you_user_my_order_url(@order) )
+
+    # Return Method - :get
+    #service.rm '1'
+
+    service.amount  @amount
+    service.quantity 1
+
+    #  https://www.paypal.com/IntegrationCenter/ic_std-variable-reference.htm
+
+
+    #TODO service.cancel_return_url url_for(:only_path => false, :controller => 'account', :action => 'show') 
+  %>
+
+      <!-- display payment summary here -->
+
+   <%= submit_tag "Make Payment" %>
+ <% end %>
+
+<% if RAILS_ENV == "production" %>
+
+ <script type="text/javascript">
+   $(document).ready( function(){
+       $('#paypal_form').hide();
+       $('#paypal_form').submit();
+     });
+ </script>
+
+<% end %>
