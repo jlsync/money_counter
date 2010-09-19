@@ -1,5 +1,10 @@
 class ImagesController < ApplicationController
 
+  def index
+    entries = Dir.entries(Rails.root.join('public'))
+    @images = entries.select {|entry| entry.downcase.match(/.png$/) }
+  end
+
   def new
     respond_to do |format|
       format.html # new.html.erb
