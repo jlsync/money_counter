@@ -6,7 +6,7 @@ class Image
 
   class ImageFileError < Exception; end
 
-  attr_accessor :file_name, :data
+  attr_accessor :file_name
 
   def initialize(options={})
     file = options[:file]
@@ -14,6 +14,19 @@ class Image
     @file_name    = file.original_filename
     @data         = file.read
     @prepend_time = Time.now.to_i
+  end
+
+  def file_name=(file_name)
+    @file_name = file_name
+    @data      = BASE_PATH.join(file_name).read
+  end
+
+  def to_json
+      {
+        'file-name' => file_name,
+        'radii'     => coins_radii,
+        'full_path' => full_path
+      }.to_json
   end
 
   def to_xml
@@ -27,14 +40,28 @@ class Image
     return unless file_name
     path = BASE_PATH.join(prepend_time_before_saving).to_s
     return path if is_png?
-    return path.sub /\.\w*$/, '.png'
+    path.sub /\.\w*$/, '.png'
   end
 
   def save!
     unless is_png?
       system("python #{OPENCV_LIB_PATH}/to_png.py #{full_path}")
     end
-    File.open(full_path, "w"){|f| f.write data }
+    File.open(full_path, "w"){|f| f.write @data }
+  end
+
+  def set_coins_radii
+    data   = `./lib/opencv/circledetect #{full_path}`
+    get_radii = data.split("\n").map{|x| x.scan(/radius=(?=(.*))/) }.flatten
+    @radii = get_radii.map &:to_f
+  end
+
+  def coins_radii
+    @radii ||= set_coins_radii
+  end
+
+  def diameters
+    coins_radii.map{|radius| 2 * radius}
   end
 
   private
