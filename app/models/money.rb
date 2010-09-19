@@ -22,6 +22,12 @@ class Money
   end
   
   def ones_and_twos_grouping
+
+    result = {}
+    result[:twos] = 0
+    result[:ones] = 0
+
+    return result if @coin_diameters.empty?
     percent_variation_allowed = 0.1
     max = @coin_diameters.max
     min = @coin_diameters.min
@@ -29,9 +35,6 @@ class Money
     max_range = (max - (max * percent_variation_allowed))..(max + (max * percent_variation_allowed))
     min_range = (min - (min * percent_variation_allowed))..(min + (min * percent_variation_allowed))
 
-    result = {}
-    result[:twos] = 0
-    result[:ones] = 0
     @coin_diameters.each do |diameter|
 
       if max_range.include?(diameter)
