@@ -17,7 +17,7 @@ class Money
   TWO_POUND    = 28.4
   
   
-  def initialize(*coin_diameters)
+  def initialize(coin_diameters)
     @coin_diameters = coin_diameters
   end
   
