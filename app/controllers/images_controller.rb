@@ -11,10 +11,14 @@ class ImagesController < ApplicationController
     image.save!
 
 
-    respond_to do |format|
-      format.html { render :text => image.to_json }
-      format.xml { render :xml => image.to_xml }
-    end
+    # force text response until Jason fixes client to request json
+    render :text => image.to_json
+
+    #respond_to do |format|
+      #format.html { render :text => image.to_json }
+      #format.json { render :text => image.to_json }
+      #format.xml { render :xml => image.to_xml }
+    #end
 
   end
 
