@@ -3,6 +3,7 @@ class Image
 
   BASE_PATH = Rails.root.join 'tmp'
   OPENCV_LIB_PATH = Rails.root.join 'lib', 'opencv'
+  PUBLIC_IMG_PATH = Rails.root.join 'public'
 
   class ImageFileError < Exception; end
 
@@ -25,8 +26,8 @@ class Image
       {
         'file-name' => file_name,
         'radii'     => coins_radii,
-        'full_path' => full_path,
-        'total_money' => '4.42'
+        'image_url' => image_url,
+        'total_money' => total,
       }.to_json
   end
 
@@ -39,9 +40,19 @@ class Image
 
   def full_path
     return unless file_name
-    path = BASE_PATH.join(prepend_time_before_saving).to_s
-    return path if is_png?
-    path.sub /\.\w*$/, '.png'
+    path = BASE_PATH.join(prepend_time).to_s
+    return to_png(path)
+  end
+
+  def image_url
+    p = Pathname.new(public_path)
+    return p.basename.to_s
+  end
+
+  def public_path
+    return unless file_name
+    path = PUBLIC_IMG_PATH.join(prepend_time).to_s
+    return to_png(path)
   end
 
   def save!
@@ -51,8 +62,13 @@ class Image
     File.open(full_path, "w"){|f| f.write @data }
   end
 
+  def total
+    money = Money.new(diameters)
+    return money.total
+  end
+
   def set_coins_radii
-    data   = `./lib/opencv/circledetect #{full_path}`
+    data   = `./lib/opencv/circledetect #{full_path} #{public_path.to_s}`
     get_radii = data.split("\n").map{|x| x.scan(/radius=(?=(.*))/) }.flatten
     @radii = get_radii.map &:to_f
   end
@@ -72,10 +88,15 @@ class Image
     file_name.downcase.match(/\.png$/)
   end
 
-  def prepend_time_before_saving
+  def prepend_time
     @prepend_time ||= Time.now.to_i # set this if it is not set during object initialization
     raise ImageFileError, 'No file name present' unless file_name
     "#{@prepend_time}_#{file_name}"
+  end
+
+  def to_png(path)
+    return path if is_png?
+    path.sub /\.\w*$/, '.png'
   end
 
 end
